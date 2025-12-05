@@ -8,7 +8,7 @@ namespace SecretSantaBackend.Models
         public int Id { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
         public List<Pair> Pairs { get; set; } = new();
-        public Employee? UnpairedEmployee { get; set; } = null; // trebat ce samo u slucaju da postoji 1 jedini igrac
+        public Employee? UnpairedEmployee { get; set; } = null; // u slucaju da postoji samo jedan igrac ili posljednjem igracu preostane da izabere samo sam sebe
     }
 }
 

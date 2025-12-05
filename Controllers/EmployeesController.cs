@@ -5,7 +5,6 @@ using SecretSantaBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace SecretSantaBackend.Controllers
 {
 

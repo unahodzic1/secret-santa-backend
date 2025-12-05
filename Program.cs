@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using SecretSantaBackend.Data;
 using SecretSantaBackend.Models;
 using SecretSantaBackend.Services;
@@ -18,11 +17,13 @@ namespace SecretSantaBackend {
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:5173/").AllowAnyHeader().AllowAnyMethod();
+                        policy.WithOrigins("http://localhost:5173/").AllowAnyHeader().AllowAnyMethod(); // front
                     });
             });
 
-            // Add services
+            builder.Services.AddControllers().AddJsonOptions(options => {
+                options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+            });
             builder.Services.AddScoped<ISecretSantaService, SecretSantaService>();
             builder.Services.AddControllers();
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -34,7 +35,6 @@ namespace SecretSantaBackend {
 
             var app = builder.Build();
 
-            // Middleware
             app.UseCors(MyAllowSpecificOrigins);
             app.UseSwagger();
             app.UseSwaggerUI();

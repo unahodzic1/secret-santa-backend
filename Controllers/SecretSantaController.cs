@@ -20,10 +20,12 @@ namespace SecretSantaBackend.Controllers
             _service = service;
         }
 
-        [HttpGet("generate")]
-        public ActionResult<SecretSantaList> Generate()
+        // Generisanje liste
+
+        [HttpPost("generate")]
+        public async Task<ActionResult<SecretSantaList>> Generate()
         {
-            var result = _service.GeneratePairsAsync();
+            var result = await _service.GeneratePairsAsync();
             return Ok(result);
         }
     }
