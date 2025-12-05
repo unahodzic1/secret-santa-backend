@@ -21,13 +21,29 @@ namespace SecretSantaBackend.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Employee>().HasOne(e => e.User).WithOne(u => u.Employee!).HasForeignKey<Employee>(e => e.UserId).IsRequired(false);
+            modelBuilder.Entity<Employee>()
+                .HasOne(e => e.User)
+                .WithOne(u => u.Employee!)
+                .HasForeignKey<Employee>(e => e.UserId)
+                .IsRequired(false);
 
-            modelBuilder.Entity<Pair>().HasOne(p => p.Giver).WithMany(e => e.DrawnPair).HasForeignKey(p => p.GiverId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Pair>()
+                .HasOne(p => p.Giver)            
+                .WithMany(e => e.GiverPair)       
+                .HasForeignKey(p => p.GiverId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Pair>().HasOne(p => p.Receiver).WithMany(e => e.GiverPair).HasForeignKey(p => p.ReceiverId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Pair>()
+                .HasOne(p => p.Receiver)          
+                .WithMany(e => e.DrawnPair)       
+                .HasForeignKey(p => p.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Pair>().HasOne(p => p.List).WithMany(l => l.Pairs).HasForeignKey(p => p.ListId).IsRequired();
+            modelBuilder.Entity<Pair>()
+                .HasOne(p => p.List)
+                .WithMany(l => l.Pairs)
+                .HasForeignKey(p => p.ListId)
+                .IsRequired();
         }
     }
 }

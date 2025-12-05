@@ -1,11 +1,13 @@
 ﻿using System;
 using SecretSantaBackend.Data;
 using SecretSantaBackend.Models;
+using SecretSantaBackend.Models.Responses;
 using SecretSantaBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace SecretSantaBackend.Controllers
 {
@@ -50,6 +52,56 @@ namespace SecretSantaBackend.Controllers
 
             return Ok();
         }
+
+        // kome kupujem poklon
+
+        [HttpGet("myPair")]
+        [Authorize(Roles = "Uposlenik")]
+        public async Task<ActionResult<MyPairResponse>> GetMySecretSantaPair()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized("Korisnički ID nije pronađen u tokenu.");
+            }
+
+            var user = await _context.Users
+                                     .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                return Unauthorized("Prijavljeni korisnik nije pronađen. Koristite novi token.");
+            }
+
+            if (!user.EmployeeId.HasValue)
+            {
+                return StatusCode(403, "Korisniku nedostaje EmployeeId.");
+            }
+
+            int employeeGiverId = user.EmployeeId.Value;
+
+            var latestPair = await _context.Pairs
+                .Include(p => p.Receiver)
+                .Where(p => p.GiverId == employeeGiverId)
+                .OrderByDescending(p => p.ListId)
+                .FirstOrDefaultAsync();
+
+            if (latestPair?.Receiver == null)
+            {
+                return NotFound("Secret Santa lista još nije generisana.");
+            }
+
+            var response = new MyPairResponse
+            {
+                ReceiverName = latestPair.Receiver.Name,
+                ReceiverSurname = latestPair.Receiver.Surname,
+                ReceiverEmail = latestPair.Receiver.Email
+            };
+
+            return Ok(response);
+        }
+
     }
 }
 

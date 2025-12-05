@@ -56,7 +56,7 @@ public class AuthController : ControllerBase
             UserName = request.Email,
             Email = request.Email,
             FirstName = request.FirstName,
-            LastName = request.LastName    
+            LastName = request.LastName
         };
 
         var result = await _userManager.CreateAsync(user, request.Password);
@@ -75,14 +75,20 @@ public class AuthController : ControllerBase
                 Surname = user.LastName,
                 Name = user.FirstName,
                 Email = request.Email,
-                UserId = user.Id
+                UserId = user.Id 
             };
 
             _context.Employees.Add(newEmployee);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); 
 
             user.EmployeeId = newEmployee.Id;
-            await _userManager.UpdateAsync(user);
+
+            var updateResult = await _userManager.UpdateAsync(user);
+
+            if (!updateResult.Succeeded)
+            {
+                return StatusCode(500, $"Korisnik je kreiran, ali nije uspjelo povezivanje s Employee tabelom: {string.Join(", ", updateResult.Errors.Select(e => e.Description))}");
+            }
         }
 
         await _userManager.AddToRoleAsync(user, role);

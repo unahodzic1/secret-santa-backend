@@ -21,20 +21,25 @@ namespace SecretSantaBackend.Services
         {
             var employees = await _context.Employees.ToListAsync();
 
+            var newSecretSantaList = new SecretSantaList { CreatedDate = DateTime.UtcNow };
+            _context.SecretSantaLists.Add(newSecretSantaList);
+            await _context.SaveChangesAsync();
+
             if (employees.Count < 2)
             {
-                throw new InvalidOperationException("Potrebna su najmanje dva uposlenika za izvlačenje.");
+                if (employees.Count == 1)
+                {
+                    newSecretSantaList.UnpairedEmployeeId = employees[0].Id;
+                }
+
+                _context.SecretSantaLists.Update(newSecretSantaList);
+                await _context.SaveChangesAsync();
+
+                return newSecretSantaList;
             }
 
             var availableReceivers = new List<Employee>(employees);
             var pairs = new List<Pair>();
-
-            var newSecretSantaList = new SecretSantaList { CreatedDate = DateTime.UtcNow };
-
-            
-            _context.SecretSantaLists.Add(newSecretSantaList);
-            await _context.SaveChangesAsync(); 
-
 
             foreach (var giver in employees.OrderBy(e => _random.Next()))
             {
@@ -42,14 +47,9 @@ namespace SecretSantaBackend.Services
 
                 if (possibleReceivers.Count == 0)
                 {
-                  
-
                     newSecretSantaList.UnpairedEmployeeId = giver.Id;
 
-                    _context.SecretSantaLists.Update(newSecretSantaList);
-                    await _context.SaveChangesAsync();
-
-                    return newSecretSantaList; 
+                    continue;
                 }
 
                 var receiver = possibleReceivers[_random.Next(possibleReceivers.Count)];
@@ -58,13 +58,16 @@ namespace SecretSantaBackend.Services
                 {
                     GiverId = giver.Id,
                     ReceiverId = receiver.Id,
-                    ListId = newSecretSantaList.Id 
+                    ListId = newSecretSantaList.Id
                 });
 
                 availableReceivers.Remove(receiver);
             }
 
             await _context.Pairs.AddRangeAsync(pairs);
+
+            _context.SecretSantaLists.Update(newSecretSantaList);
+
             await _context.SaveChangesAsync();
 
             newSecretSantaList.Pairs = pairs;
