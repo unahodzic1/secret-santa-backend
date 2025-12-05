@@ -4,6 +4,7 @@ using SecretSantaBackend.Models;
 using SecretSantaBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization; 
 
 
 namespace SecretSantaBackend.Controllers
@@ -13,15 +14,16 @@ namespace SecretSantaBackend.Controllers
     [Route("api/[controller]")]
     public class SecretSantaController : ControllerBase
     {
-        private readonly SecretSantaService _service;
+        private readonly ISecretSantaService _service;
 
-        public SecretSantaController(SecretSantaService service)
+        public SecretSantaController(ISecretSantaService service)
         {
             _service = service;
         }
 
         // Generisanje liste
 
+        [Authorize(Roles = "Administrator")]
         [HttpPost("generate")]
         public async Task<ActionResult<SecretSantaList>> Generate()
         {

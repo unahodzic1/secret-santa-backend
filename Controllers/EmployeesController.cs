@@ -4,6 +4,8 @@ using SecretSantaBackend.Models;
 using SecretSantaBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace SecretSantaBackend.Controllers
 {
@@ -19,13 +21,14 @@ namespace SecretSantaBackend.Controllers
             _context = context;
         }
 
-        // CRUD operacije
-
+        // CRUD operacije - nepotrebne sada jer postoji registracija
+        [Authorize(Roles = "Administrator")]
         [HttpGet]
         public async Task<ActionResult<List<Employee>>> GetEmployees(){
             return await _context.Employees.ToListAsync();
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public async Task<ActionResult<Employee>> PostEmployee(Employee employee){
             _context.Employees.Add(employee);
@@ -33,6 +36,7 @@ namespace SecretSantaBackend.Controllers
             return CreatedAtAction(nameof(GetEmployees), new { id = employee.Id }, employee);
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id){
             var employee = await _context.Employees.FindAsync(id);

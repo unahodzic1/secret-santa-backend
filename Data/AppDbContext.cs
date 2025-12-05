@@ -1,11 +1,12 @@
 ﻿using SecretSantaBackend.Models;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace SecretSantaBackend.Data
 {
 
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<User>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
@@ -19,6 +20,8 @@ namespace SecretSantaBackend.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Employee>().HasOne(e => e.User).WithOne(u => u.Employee!).HasForeignKey<Employee>(e => e.UserId).IsRequired(false);
 
             modelBuilder.Entity<Pair>().HasOne(p => p.Giver).WithMany(e => e.DrawnPair).HasForeignKey(p => p.GiverId).OnDelete(DeleteBehavior.Restrict);
 
