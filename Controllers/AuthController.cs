@@ -87,7 +87,7 @@ public class AuthController : ControllerBase
 
             if (!updateResult.Succeeded)
             {
-                return StatusCode(500, $"Korisnik je kreiran, ali nije uspjelo povezivanje s Employee tabelom: {string.Join(", ", updateResult.Errors.Select(e => e.Description))}");
+                return StatusCode(500);
             }
         }
 

@@ -23,7 +23,8 @@ namespace SecretSantaBackend.Controllers
             _context = context;
         }
 
-        // CRUD operacije - nepotrebne sada jer postoji registracija
+        // CRUD operacije 
+
         [Authorize(Roles = "Administrator")]
         [HttpGet]
         public async Task<ActionResult<List<Employee>>> GetEmployees(){
@@ -63,15 +64,14 @@ namespace SecretSantaBackend.Controllers
 
             if (string.IsNullOrWhiteSpace(userId))
             {
-                return Unauthorized("Korisnički ID nije pronađen u tokenu.");
+                return Unauthorized();
             }
 
-            var user = await _context.Users
-                                     .FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user == null)
             {
-                return Unauthorized("Prijavljeni korisnik nije pronađen. Koristite novi token.");
+                return Unauthorized();
             }
 
             if (!user.EmployeeId.HasValue)
