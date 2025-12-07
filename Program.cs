@@ -22,17 +22,15 @@ namespace SecretSantaBackend
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
-                options.Password.RequireDigit = false;           
-                options.Password.RequireLowercase = false;        
-                options.Password.RequireUppercase = false;        
-                options.Password.RequireNonAlphanumeric = false;  
-                options.Password.RequiredLength = 1;              
-                options.Password.RequiredUniqueChars = 0;         
-                options.User.RequireUniqueEmail = true;
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 1;
+                options.Password.RequiredUniqueChars = 0;
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedEmail = false;
                 options.User.AllowedUserNameCharacters = null;
-                options.User.RequireUniqueEmail = true;
             })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
@@ -71,7 +69,7 @@ namespace SecretSantaBackend
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:5173")
+                        policy.WithOrigins("http://localhost:5173", "https://secret-santa-frontend-murex.vercel.app")
                               .AllowAnyHeader()
                               .AllowAnyMethod();
                     });
@@ -117,20 +115,6 @@ namespace SecretSantaBackend
                 }
             }
 
-            using (var scope = app.Services.CreateScope())
-            {
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                string[] roleNames = { "Administrator", "Uposlenik" };
-
-                foreach (var roleName in roleNames)
-                {
-                    if (!await roleManager.RoleExistsAsync(roleName))
-                    {
-                        await roleManager.CreateAsync(new IdentityRole(roleName));
-                    }
-                }
-            }
-
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -144,7 +128,7 @@ namespace SecretSantaBackend
             app.UseAuthorization();
 
             app.MapControllers();
-            app.Run();
+            await app.RunAsync();
         }
     }
 }
