@@ -71,7 +71,8 @@ namespace SecretSantaBackend
                     {
                         policy.WithOrigins("http://localhost:5173", "https://secret-santa-frontend-murex.vercel.app")
                               .AllowAnyHeader()
-                              .AllowAnyMethod();
+                              .AllowAnyMethod()
+                              .AllowCredentials();
                     });
             });
 
