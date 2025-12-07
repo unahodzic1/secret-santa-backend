@@ -30,7 +30,7 @@ namespace SecretSantaBackend
                 options.Password.RequiredUniqueChars = 0;
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedEmail = false;
-                options.User.AllowedUserNameCharacters = string.Empty;
+                options.User.AllowedUserNameCharacters = null;
             })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
@@ -122,7 +122,7 @@ namespace SecretSantaBackend
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthentication();
