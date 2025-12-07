@@ -89,6 +89,36 @@ namespace SecretSantaBackend
 
             using (var scope = app.Services.CreateScope())
             {
+                var services = scope.ServiceProvider;
+                var dbContext = services.GetRequiredService<AppDbContext>();
+
+                try
+                {
+                    dbContext.Database.Migrate();
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred while migrating the database.");
+                }
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                string[] roleNames = { "Administrator", "Uposlenik" };
+
+                foreach (var roleName in roleNames)
+                {
+                    if (!await roleManager.RoleExistsAsync(roleName))
+                    {
+                        await roleManager.CreateAsync(new IdentityRole(roleName));
+                    }
+                }
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
                 string[] roleNames = { "Administrator", "Uposlenik" };
 
