@@ -30,7 +30,7 @@ namespace SecretSantaBackend
                 options.Password.RequiredUniqueChars = 0;
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedEmail = false;
-                options.User.AllowedUserNameCharacters = null;
+                options.User.AllowedUserNameCharacters = "";
             })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
@@ -38,7 +38,7 @@ namespace SecretSantaBackend
             var jwtKey = builder.Configuration["Jwt:Key"];
             if (string.IsNullOrEmpty(jwtKey))
             {
-                throw new InvalidOperationException("JWT Key not configured in appsettings.json");
+                throw new InvalidOperationException();
             }
             var key = Encoding.UTF8.GetBytes(jwtKey);
 

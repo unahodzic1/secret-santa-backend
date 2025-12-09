@@ -2,8 +2,8 @@
 {
     public class MyPairResponse
     {
-        public string ReceiverName { get; set; }
-        public string ReceiverSurname { get; set; } 
-        public string ReceiverEmail { get; set; } 
+        public string ReceiverName { get; set; } = default!;
+        public string ReceiverSurname { get; set; } = default!;
+        public string ReceiverEmail { get; set; } = default!;
     }
 }

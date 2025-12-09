@@ -85,9 +85,9 @@ namespace SecretSantaBackend.Controllers
 
                 return Ok(history); 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Interna serverska greška prilikom dohvata historije.");
+                return StatusCode(500);
             }
         }
     }
